@@ -23,7 +23,10 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
-
+#define LOCK_LEVEL 8
+#define PRIORITY_FAKE -1
+#define NICE_DEFAULT 0
+#define RECENT_CPU_BEGIN 0
 /* A kernel thread or user process.
 
    Each thread structure is stored in its own 4 kB page.  The
@@ -88,6 +91,11 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
+    //change
+    int stored_priority;
+    int64_t sleep_ticks;
+    
+    //end change
     struct list_elem allelem;           /* List element for all threads list. */
 
     /* Shared between thread.c and synch.c. */
@@ -100,6 +108,17 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
+    //changed t02 task 4
+  bool is_donated;
+  struct lock *lock_blocked_by;
+  struct list locks;
+  int child_load_status;
+  // struct lock lock_child;
+  // struct condition cond_child;
+  struct list children; 
+  int nice;                             /* Thread nice value */
+  int recent_cpu; 
+  //end
   };
 
 /* If false (default), use round-robin scheduler.
@@ -137,5 +156,22 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+//change
+void thread_priority_temporarily_up(void);
+void thread_priority_restore(void);
+bool compare(struct list_elem*,struct list_elem*,void*);
+//task 2
+void thread_block_till(int64_t);
+void thread_set_next_wakeup(void);
+bool compare_ticks(struct list_elem*,struct list_elem*,void*);
+//end task 2
+//t02
+void thread_yield_current(struct thread *);
+bool invcompare(struct list_elem*,struct list_elem*,void*);
+void thread_given_set_priority(struct thread*,int , bool);
+void thread_sleep(int64_t);
+//end change
+
 
 #endif /* threads/thread.h */
