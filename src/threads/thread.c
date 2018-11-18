@@ -151,11 +151,12 @@ void thread_block_till(int64_t wakeup)
 
 void thread_set_next_wakeup(void)
 {
+  enum intr_level old_level;
   if(list_empty(&sleepers))
     return;
   struct list_elem *elem_cur;
   struct thread *t;
-  enum intr_level old_level;
+  
   elem_cur = list_begin(&sleepers);
   t = list_entry(elem_cur,struct thread,elem);
   if(t->sleep_ticks>timer_ticks())

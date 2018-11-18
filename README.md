@@ -4,6 +4,8 @@ Assignment for :
 
 **CS310 - Introduction to Communicating Distributed Processes**
 
+To know about the changes, head on to DOCUMENTATION.md
+
 ### Steps to install:
 
 ```
